@@ -1,0 +1,12 @@
+CIFS (common Internet fileystem)
+connect UNIX server e.g Linux servers to windows shares or smba shares
+
+1.Mounting to a samba from a linux server using CIFS
+a. Create mountpoint
+#mkdir /cifsmnt
+#mount -t cifs //192.168.2.73/fullbackup /cifsmnt -o username=student,password=school1
+
+2. Mounting to a windows share from a linux server using cifs
+on windows system ,you have to enable file and print sharing
+#mkdir /cifsmnt1
+#mount -t cifs //192.168.1.251/Users /cifsmnt1 -o username=unix6,password=school1
