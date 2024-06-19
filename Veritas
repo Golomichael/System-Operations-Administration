@@ -1,0 +1,92 @@
+    Storage manager
+volume managers
+svm
+lvm
+zfs
+veritas
+
+Veritas has its own filesystem ---vxfs
+It is a 3rd party application and requires renewable licenses
+It is best used with huge SAN storage systems
+It must be installed on a Unix server
+
+  Veritas Daemons
+vxconfigd
+vxiod
+vxrelod
+vxrecoverd
+vxnotifyd
+
+veritas is a 64bits application and cannot be installed on a 32 bits OS verify your server's bit level
+#isainfo -v
+
+Use the winscp to send the file into the solaris server
+Moov the file in to root pwd
+gunzip the file
+#gunzip VRTS_SF_HA_Solutions_6.0.1_Solaris_x64.tar.gz
+#tar -xvf VRTS_SF_HA_Solutions_6.0.1_Solaris_x64.tar
+
+VERITAS storage foundation suite 6.01 installation
+1. #cd dvd2-sol_x86
+2. #cd sol10_x64
+3. #cd storage_foundation
+
+4.
+./installsf (Run script to start installation)
+
+y (yes to agreement)
+3 (Install all packages
+<Enter>
+y
+<Enter>
+2
+<Enter>
+<Enter>
+n
+
+5. start the veritas Daemons
+#/opt/VRTS/install/installsf601 -configure
+
+6. Create a veritas volume
+a.Initialize disks for veritas.
+#devfsadm -c disk
+use the veritas command now ton initialize
+#vxdisk init c0t2d0 c0t3d0
+verify:
+#vxdisk list
+
+b. Create a disk group from the initialized disks
+#vxdg init dg1 c0t2d0 c0t3d0
+verify:
+#vxdisk list
+#vxdg list
+#vxdg list dg1
+
+c. Create a 2gb volume from the dg1 disk group
+#vxassist -g dg1 make vg1 2g
+verify:
+#vxstat -g dg1
+#vxstat -g dg1 vg1
+#vxsprint vg1
+#vxsprint -l vg1
+
+7. Format and mount the volume
+#mkfs -F vxfs /dev/vx/rdsk/dg1/vg1
+
+8. Mount the formated volume
+#mkdir /vxmnt
+#mount -F vxfs /dev/vx/dsk/dg1/vg1 /vxmnt
+
+9.Make the veritas mountpoint permanent in /etc/vfstab
+#echo "/dev/vx/dsk/dg1/vg1 /dev/vx/rdsk/dg1/vg1 /vxmnt vxfs - yes -" >> /etc/vfstab
+#df -v
+
+
+
+
+
+
+
+
+
+
