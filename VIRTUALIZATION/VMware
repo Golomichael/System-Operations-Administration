@@ -1,0 +1,150 @@
+                     VIRTUALIZATION                                
+
+
+                         I) VMware 
+. It is  an American publicly traded software company. It provides virtualization software , cloud computing and services.
+
+.Vmware has 80% of virtualization market share
+
+.The name = V M WARE (Hardware + Software)
+
+.There are two main virtualization software
+VMWare plater = Runs over operating system
+VMWare hypervisor = Bare-metal hypervisor runs over a hardware without having an operating system
+
+
+
+          II) Products in VMWare
+.VMWare Workstation player
+We can use it to use it to run virtual machine
+
+.VMWare vSphere Hypervisor (ESXi)
+Bare-metal  hypervisor that installs directly onto your physical server
+
+.VMWare vSphere client
+interface that allows you to connect to a hypervisor
+It is a client just like RDP (PUTTY)
+It is web based client
+
+.VMWare vCenter
+Used to manage multiple hypervisor
+
+
+
+          III) Importance of VMWare 
+.System administration
+.Network/storage administration
+.Programming or development (Automationor testing
+.Database or application administration (DB or Apps run OS and OS runs on VMs
+.Cloud (most of 90% run on virtual environment).
+
+
+                      Lab Design
+ in corporate we have to do it with redundancy
+VMWare lab URL
+http://labs.hol.vmware.com
+
+.Download and install vSphere ESXi server (it is the virtualization layer ontop of the vmware player
+
+.Make the IP static on the console
+
+.Access the esxi server we have to use a browser and use the IP adress to connect to it
+
+vSphere HA: (high availability)
+
+            CONFIGURATION
+
+Desktop/Laptop==>> VMWare workstation player==>> VM ==>> ESXi==>> VMs
+
+
+ 
+
+
+
+
+                      VMWare on single ESXi
+
+Laptop ==> VMWare player ==> vSphere ESXi ==> VM
+
+Attach ISO image to host.
+Create a directory called ISO to store all our ISO images in oerder to use it to create virtual machines on our VMware vSphere ESXi environement.
+
+                    
+
+                           VM management
+As admin we should manage vSphere ESXi and VMs too.
+
+*Update ESXi Hostname
+In coporate world we have multiple hypervisor so we have to respect a naming standards.
+Reload after changement
+
+Install windows machine
+
+
+         Install VMWare tools on a VM
+It should br installed on a VM in order to pull out the accurate information for better monitoring,and software can functione properly etc. It  provides necessary drivers.
+
+Go to action and install it
+
+
+         Review VMs and Modify Ressources
+
+we cannot make changes on cpu or memory unless we shutdown the vm
+add more storage (simple volume and assign unallocated space)
+
+
+                   VM Snapshots
+What is a snapshot
+.A snapshot preserves the state and data of virtual machine at a specific point in time.
+.The state includes the virtual machines'power state(for example, powered on, powered off, suspended
+.The data includes all the files that make up the virtual machine. This includes disks, memory and other devices such as virtual network interface cards.
+
+Snapshot is not a backup !!!!
+
+
+
+              vCenter installation and configuration 
+
+Create a new VMWare esxi and add memory 12*1024 since we do not have the GB option we have to convert it.
+
+What is VMWare vCenter?
+vCenter is a centralized management utility for VMWare.
+It supports function like HA,vMotion,vDS,vSAN,SSO,update manager ,host profiles, vRealize orchestrator and many more.
+
+.The newer version comes pre-packaged as an appliance (OS + Application) that can be installed on ESXi as VM.
+
+
+
+            vCenter Appliance Download and install options
+ 
+1)How to download vCenter 
+
+PSC:platform service controller
+
+           Accessing vCenter
+.Browser
+*Flash (provide fully qualified domain name "administrator@vsphere.local")
+*HTML5
+
+.Console (within web-client
+.SSH
+.vCenter Management Interface (we should provide the port)
+
+
+            Vcenter management interface
+
+https://192.168.111.138:5480
+
+Backup
+Create support bundle: open a ticket for vmware support
+reboot
+shutdown
+
+             
+                   Create a Datacenter and add ESXi servers
+
+1)Login to vCenter
+2) Create a datacenter
+3) Add Esxi1
+4) Add esxi2
+
