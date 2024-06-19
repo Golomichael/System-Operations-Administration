@@ -1,0 +1,117 @@
+NFS in Solaris
+
+Main NFS daemon:
+network/nfs/server
+
+Main config file:
+/etc/dfs/dfstab 
+
+dfs = Distributed filesystem
+dfstab = Distributed Filesystem table
+
+1. Configure an NFS server (Contains the share)
+2. Mount to the NFS share from remote systems
+
+A. Configure a Solaris NFS server
+
+1.Create the share directory
+#mkdir /export/home/nfsshare
+#chmod 777 /export/home/nfsshare
+
+2. Share the NFS Directory
+#share -F nfs /export/home/nfsshare
+-F = specify path to directory
+
+3. Verify:
+#share
+#dfshares
+#showmount -e
+
+4. Make the NFS share permanent
+File involved:
+/etc/dfs/dfstab
+
+#vi /etc/dfs/dfstab (and add the following)
+#share -F nfs /export/home/dfstab
+
+5. Mount to the NFS share from a remote Solaris NFS client.
+In remote system
+a. Display all available share on the target NFS server
+#showmount -e 192.168.1.242
+
+b. Mount to the NFS share from the Remote NFS client
+#mkdir /nfsmnt1
+#mount -F nfs 192.168.1.206:/export/home/nfsshare /nfsmnt1
+#df -h to verify
+#touch /nfsmnt1/test
+
+c. Make the NFS Mountpoint permanent. (NFS client)
+#vi /etc/vfstab (and add the following)
+192.168.1.242:/export/home/nfsshare - /nfsmnt1 nfs - yes -
+
+
+Mount from a Linux Client
+#mkdir /nfsmnt2
+#mount -t nfs 192.168.1.206:/export/home/nfsshare /nfsmnt2
+#df -h
+
+Make the mount permanent
+#vi /etc/fstab (and add the following)
+192.168.1.206:/export/home/nfsshare /nfsmnt2 defaults 0 0 
+
+
+NFS in ZFS
+#zfs set sharenfs=on pool1/zfs1
+
+example:
+Create block devices
+mkfile 200M /disk1 /disk2
+#ls -lh /disk* to verify
+#zpool create pool1
+#zpool list
+#zfs create pool1/zfs1
+then
+#zfs set sharenfs=on pool1/zfs1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
