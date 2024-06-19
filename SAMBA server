@@ -99,3 +99,105 @@ write list = <user> (to specify user in write list)
 
 read list = <user>  (to specify user in read list)
 
+
+
+
+
+Samba Server Installation and Configuration in RHEL8 AWS EC2 Instance
+
+A samba server is a file server used for storing data. Shared resources can be created in a Samba and Windows and Linux clients can connect to the shared resources
+
+
+1. Install the Samba Server prerequisite dependency packages and the server package
+
+#yum -y install samba samba-client samba-common 
+
+
+2. Install and configure the local server firewall daemon
+
+#yum install firewalld -y (to install the firewall daemon)
+
+#service firewalld start
+
+OR
+
+#systemctl start firewalld
+
+Make Daemon permanent
+
+#chkconfig firewalld on
+
+OR
+
+#systemctl enable firewalld
+
+
+3. Open up Samba ports on the firewall
+
+#firewall-cmd --permanent --zone=public --add-service=samba
+
+#firewall-cmd --reload (to enforce the change)
+
+#firewall-cmd --list-all (to verify)
+
+OR
+
+#firewall-cmd --permanent --add-port=137/tcp
+
+#firewall-cmd --permanent --add-port=138/tcp
+
+#firewall-cmd --permanent --add-port=139/tcp
+
+#firewall-cmd --permanent --add-port=445/tcp
+
+#firewall-cmd --reload
+
+#firewall-cmd --list-all
+
+
+4. Create the Samba share directory
+
+#mkdir /class26-awssamba
+
+#chmod 777 /class26-awssamba
+
+
+5. Create the Samba User (will be needed to authenticate client systems when connecting to the Samba share)
+
+#useradd sambauser
+
+#smbpasswd -a sambauser  (will assign a password to the the samba user and add the samba user to the samba security database)
+
+
+6. Configure the Samba smb.conf file
+
+#vi /etc/samba/smb.conf (and add the following;)
+
+[aws-samba]  (share label as seen by client systems)
+
+comment = class26 aws rhel8 samba server (description of the share)
+
+path = /class26-awssamba (share directory)
+
+force user = sambauser (will authenticate samba client)
+
+writable = yes (will grant read and write permission to share for the clients)
+
+
+7. Start the samba daemon
+
+#service smb start
+
+#chkconfig smb on
+
+
+8. Grant connection access to the samba server for the samba clients
+
+#chcon -t samba_share_t /class26-awssamba
+
+
+
+
+
+
+
