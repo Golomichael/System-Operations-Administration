@@ -1,0 +1,156 @@
+Write a playbook to create a user account fr James Madis with standard specs. Assign an initial password to James and have the system prompt him to create a new password at login.
+
+---
+
+- name: useradd
+  hosts: aws
+  become: yes
+  tasks: 
+
+   - name: User module
+    
+     user: name=jmadis comment="James Madis" password=qugQGgIQQ9CDk
+
+   - name: Expire his initial password so he is prompted for new password
+
+     shell: chage -d 0 jmadis
+
+$vi useradd.yml (and add the playbook text)
+$ansible-playbook useradd.yml
+
+Verify in ansible client 
+$cat /etc/passwd
+Login as jmadis from putty
+
+
+Ansible module to delete a user account
+Delete the user ptosh
+$ansible aws -m user -a 'name=ptosh state=absent' --become
+
+$cat /etc/passwd (in client to verify)
+
+Delete the user bmarley including his home directory
+$ansible aws -m user -a 'name=bmarley state=absent remove=yes force=yes' --become
+
+$cat /etc/passwd (in client to verify)
+ls /home
+
+Playbook to install and configure apache tomcat
+
+---
+-hosts:aws
+ tasks:
+ - name: Install wget
+   command: yum install wget -y
+ - name: Download JDK 8 RPM file
+   command: wget http://globalrsv.softether.net/tomcat/jdk-8u20-linux-x64.rpm
+
+(see apche tomcat playbooks)
+
+$sudo yum remove jdk*1 (parceque le playbook avait un problem et on devait desinstaller ceratins package pour reprendre linstallation apres correction du script)
+
+Go to a browser and enter 
+http://<aws ip>:8080
+
+
+                   Splunk Indexer Server Installation on RHEL7/8
+1.Download the splunk server
+#wget globalsrv.softether.net/Software/splunk/Indexer/splunk-7.1.2-a0c72a66db66-linux-2.6-x86_64.rpm
+
+2.Install the splunk package
+#rpm -i splunk*
+
+3.Assign full access permission to the splunk directory
+#chmod -R 777 /opt/splunk (R= recursive chmod will grant permission to the parent and all components of the directory)
+#sudo chown -R ansiblesplunk:splunk /opt/splunk (give ownership to the user)  
+
+4.Start the splunk daemon
+#cd /opt/splunk/bin 
+#./splunk start --accept-licence
+#./splunk enable boot-start (to make the daemon permanent)
+
+5. Open up port 8000 in the firewall
+#firewall-cmd --permanent --add-port=8000/tcp
+#firewall-cmd --reload
+
+6.Go to a browser and enter 
+http://192.168.1.80:8000
+
+Username:admin
+Password: Emeraude2289/
+
+  Uninstall splunk
+1.verify if splunk is installed
+#rpm -qa | grep splunk 
+
+Uninstall splunk
+
+#yum remove -y splunk*
+#rm -Rf /opt/splunk
+
+2.Install in the AWS RHEL8 server
+#wget globalsrv.softether.net/Software/splunk/Indexer/splunk-7.1.2-a0c72a66db66-linux-2.6-x86_64.rpm
+
+#rpm -i splunk* (to install splunk)
+#chmod 777 /opt/splunk
+#cd /opt/splunk/bin 
+./splunk start --accept-license (to start splunk daemon)
+#sudo chown -R ansiblesplunk:splunk /opt/splunk (give ownership to the user)  
+./splunk enable boot-start
+
+
+3.Access yoursplunk server from a browser
+retrouver le password 
+
+/opt/splunk/var/lib
+/opt/splunk/var/log
+
+The AWS will be the plunk indexer and aour ansible server will be splunk monitor sine it is the one we want to monitor
+
+Join a Centos7 server to the Splunk server
+
+1.Download the Splunk Forwarder package
+#wget globalsrv.softether.net/Software/splunk/Fowarders/linux/splunkforwarder-8.0.2.1-f002026bad55-linux-2.6-x86_64.rpm
+
+2. Install the package
+#yum install -y splunkforwarder*
+
+3.Grant full permission to the splunkforwarder directory
+#chmod -R 777 /opt/splunkforwarder
+
+4.Start the splunkforwarder daemon
+#cd /opt/splunkforwarder/bin
+#./splunk start --accept-licence
+#./splunk enable boot-start
+username: admin
+password: Emeraude2289/
+port :8000 (in case you want to access it with a browser)
+
+5. Join the ansible server or for forwarder to the splunk server or indexer
+#cd /opt/splunkforwarder/bin
+#./splunk add forward-server 18.233.7.53:9997 (script )
+#./splunk list forward-server (to verify)
+
+6.Add component to be monitored
+Add logs in the /var/log/messages files to be monitored 
+#./splunk add monitor /var/log/messages -index main -sourcetype Ansiblesplunk
+
+
+7. On AWS Splunk Server (Indexer)
+Configure splunk to listen to port 9997 from ansible forwarder
+#cd /opt/splunk/bin
+#./splunk enable listen 9997
+
+
+Open up port 9997 on the firewall
+#firewall-cmd --permanent --add-port=9997/tcp
+#firewall-cmd --reload
+
+Restart Ansible splunk forwarder daemon
+#./splunk restart
+
+8. Go to splunk browser and verify 
+in search type
+index="main"
+
+
