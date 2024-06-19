@@ -1,0 +1,90 @@
+IPA server ( Identity, policy , Audit )
+FreeIPA
+IPA Server Services
+-LDAP (Lightweight Directory Access Protocol) 
+LDAP is an identity management server. (ability to have user work on multiple systems without having to create user account on every system)
+SSO (Single Sign On )
+Realm or Domain
+
+-Kerberos (like a 2nd layer of authentication)
+It is a 3rd party authentication server
+
+-Bind (DNS or Name server )
+
+IPA server IP : 192.168.1.207  
+IPA Hostname: ipasrv.class26domain.local
+With no GUI SET UP STATIC IP
+#cd /etc/sysconfig/network-scripts
+#vi ifcfg-enp0s3 and add the following
+BOOTPROTO=none
+IPADDR=192.168.1.207
+GATEWAY=192.168.1.1
+DNS1=192.168.1.1
+DNS2=8.8.8.8
+
+Install and configure FreeIPA
+Domain class16domain.local
+Realm : CLASS16DOMAIN.LOCAL
+1.Configure the hosts file
+echo "192.168.1.207 ipasrv.class16domain.local ipasrv" >> /etc/hosts
+#cat /etc/hosts
+#echo "ipasrv.class16domain.local" > /etc/hostname
+
+2.Install FreeIPA Server
+#yum install ipa-server -y
+
+3.Initialize and activate the IPA server
+#ipa-server-install
+Realm and admin password: Emeraude2289
+
+4.Open the required ports on the firewall
+#firewall-cmd --add-service=http --permanent
+#firewall-cmd --add-service=https --permanent
+#firewall-cmd --add-service=ldap --permanent
+#firewall-cmd --add-service=ldaps --permanent
+#firewall-cmd --add-service=kpasswd --permanent
+#firewall-cmd --reload (to enforce changement)
+#firewall-cmd --list-services (to verify)
+
+5. Ensure Home Directories are created
+#authconfig --enablemkhomedir --update
+#chkconfig sssd on
+#init 6 
+
+a continuer 1h07
+
+6. Access the ipa server from a browser
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
