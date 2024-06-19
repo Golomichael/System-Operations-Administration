@@ -1,0 +1,95 @@
+        Process management
+Display all processes running in the system
+#ptree
+
+1. The Ps command (will display a snapshot of system processes running in a session at a specific time)
+#ps
+#ps -l (Display details of the processes)
+
+A zombie process is a dead child process that has not been cleared by the parent process
+
+#ps -f (display full listing of the process)
+#ps -e (displays all processes running on the server)
+#ps -p <pid>
+#ps -f -p <pid> (will combine and give you more details)
+#ps -u <user>
+#ps -o (to manipulate the output of the process command example= #ps -o pid,pri,nice,comm)
+
+
+The pgrep command (usede to search for a specific process using the process name)
+#pgrep bash
+#pgrep -l bash 
+#pgrep -G <group_name>
+#pgrep -P <pid> (will display the parent process of the specific process)
+#pgrep -u <user>
+
+
+
+   The prstat command (Solaris only command) it will display system processes at 5 second intervals and will also display system resource usage)
+#prstat
+#prstat -a (will display summary of CPU and RAM resssource usage)
+#prstat -p <pid>
+#prstat -u <user>
+#prstat -s <field> (it will sort  a field>
+example
+#prstat -s cpu
+
+
+
+PROCESS MANAGEMENT COMMANDS
+
+SOLARIS           LINUX
+ptree             ptree
+ps                ps
+pgrep             pgrep 
+prstat            top
+
+Running process in the background
+Press ctrl + z
+
+Display background processes
+#jobs
+
+
+
+Bring a background to the foreground
+#fg
+
+
+Bring job1 to the foreground
+#fg 1
+
+Start a process in the background
+#prstat &
+
+
+
+kill background processes
+a. bring the process to the foreground and kill it with a ctrl + c operation
+
+b. #kill -9 %<job>
+#kill %<job> or #kill -15 <job>
+
+killing a running process
+#kill -9 -p <pid> 
+or 
+#pkill -9 <process_name>
+
+#kill -15 -p <pid> or kill pkill -15 <process_name>
+
+      Pause an unpause processes
+
+
+#kill -23 <pid> or pstop <pid> (pause system processes)
+#kill -25 <pid> or prun <pid> (to unpause a process)
+
+Changing Process Priority 
+Lower the nice value to increase the priority and vise versa
+Nice value range -20 to =19
+#renice -19 -p 8250
+#renice -n 5 -g staff
+#renice -n 5 -u user
+#nice -n 10 prstat (will start the priority with a specificpriority)
+
+
+
