@@ -1,0 +1,101 @@
+samba shares can be mounted by linux systema. window system can also mao to the share.
+
+Samba server can be configured on a linux, unix, windows and NAS platform
+configure a samba server in Solaris.
+Maib config file:
+/etc/samba/smb.conf
+Main daemon= samba
+samba comes installed but not configured in solaris
+
+Configure a samba server in Solaris
+1.Create a samba share
+#mkdir /export/home/samba
+#chmod 777 /export/home/samba
+
+2.Create the smb.conf file
+#cd /etc/samba
+#cp smb.conf-example smb.conf
+#ls
+
+3.Enter desired samba settings into the file
+
+#vi smb.conf and enter the following:
+[class26samba]
+comment = class26 samba share
+path = /expoprt/home/samba
+force user = class26samba
+writable = yes
+
+
+4. Enable the samba daemon
+#svcadm enable samba
+#svcs samba
+
+5. Create the smba user account
+#useradd class26samba
+#smbpasswd -a class26samba (will create password and add the account to the samba security bdatabase)
+
+6.Map to samba share from a windows system
+Go to the windows explorer and enter the following.\\192.168.1.206
+
+7.Map to the samaba share from A liNUX CLIENT
+
+#mkdir /class26smb
+
+Linux systems can mount to a samba share using CIFS (common internet filesystem)
+it can be used to mount Linux systems to samba shares or windows shares
+#mount -t cifs //192.168.1.206/class26samba /class26smb -o username=class26samba,password=school1
+#df -h (to verify
+
+8., Make the mountpoint permanent
+#vi /etc/fstab (and add the following)
+echo"//192.168.1.242/class26samba /class26smb cifs username=class26samba,password=school1 0 0" >> /etc/fstab
+
+
+
+ Configure a Samba server in Linux
+Samba does not come installed in Linux
+Main config file = /etc/samba/smb.conf
+daemon: smb
+
+1.Install the samba server
+yum install -y samba
+
+
+2.Create the samba path
+#mkdir /home/linuxsmb
+
+3.Add settings into the smb.conf file
+#vi /etc/samba/smb.conf (and add the following)
+[linuxsmb26]
+comment = class26 linux samba
+path = /home/linuxsmb
+Force User = class26samba
+writable = yes
+
+4. Create the samba user
+useradd class26samba
+#smbpasswd -a class26samba
+
+5.Start the sdamba daemon
+
+#service smb start
+#chkconfig smb --level 35 on 
+
+6.Grant rw permission to clients
+#chcon -t samba_share_t /home/linuxsmb
+
+7.Open samba port in the firewall
+
+#systemctl status firewalld
+#firewall-cmd --add-service=samba --permanent
+#firewall-cmd --list-services
+
+#service iptables restart  (to enforce change)
+#cat /etc/sysconfig/iptables (to verify)
+#systemctl start iptables
+#systemctl enable iptables
+write list = <user> (to specify user in write list)
+
+read list = <user>  (to specify user in read list)
+
