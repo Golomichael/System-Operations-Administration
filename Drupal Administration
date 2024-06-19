@@ -1,0 +1,243 @@
+Drupal Administration Instructions
+
+1
+Contents…
+Things to Remember……………………………….………………………....……………………..3
+Accessing Drupal…………..………………………..……………………….……………………......4
+Initial Login and Account Setup...………………………….………………………..…4
+Login Instructions………………………………………………….…………………………4
+Manipulating Content……..……………………………………………,..…...…………………….5
+Types of Content……………………………………………………………………………...5
+Finding Content…………………….………………….……………………………………..5
+Creating Content…………………………………………………………..………………....6
+Editing Content…….…………………………………...………………..…...…………....………....7
+Universal Page………………………………………………………………………………....7
+Landing Page…………………………………………………….………………………...….7
+Publishing Content…………………………………………………………………………...9
+Wysiwyg (What You See Is What You Get)............................................…..9
+Advanced Formatting Options…………………………………………………………...9
+2
+Things to Remember…
+● Prepare before you begin
+○ Edit your content outside of Drupal - knowing what you are going to add and where it should
+go will help streamline the process and make pages less chaotic
+○ Collect your images before beginning - Know what images you want, where you would like
+them to go in the page, and where they are all stored (on your computer or in your online
+database)
+○ Resize images before you begin - use copies of images that are as small as possible to help
+balance picture quality and data size; smaller images mean shorter load times and less data
+usage
+● The page automatically adapts for mobile viewers by stacking your content
+○ If you are concerned about how your page will look on a phone or tablet, check out your
+edits on one of these devices before publishing
+○ Simple pages look the cleanest to viewers on all devices. The fewer complexities the
+better
+● NO TABLES unless they’re needed for exhibiting data
+○ Although you may be used to using tables for creating layouts in html, this approach isn’t
+compatible with Drupal
+● No absolute URLS
+○ When creating links within your page, keep the directory system in mind
+○ Rather than typing (https://web.gse.harvard.edu/my-file), use (/my-file)
+● Use DASHES for attached images and files
+○ Just like in URLs, we can’t use spaces or capitals in file names
+○ NOT: THIS_is myimage.jpg USE: this-is-my-image.jpg
+● Be as specific as possible when naming your files
+○ Generic file names clutter the page’s back end; being specific with file names will help make
+creating and editing easier
+○ NOT: image.jpg, banner.jpg USE: alumni-banner.jpg
+● Accessibility tags are required
+○ Use ALT and Title Tags when creating pages
+● Pages are cached
+○ Sometimes it can take up to 15 minutes after publishing a page for it to be visible
+● BUT assume that after publishing pages are visible
+● Not all users have the same permissions
+○ Other users may see something different than you
+3
+Accessing Drupal…
+Initial Login and Account Setup
+● After your account has been created, you will receive a username and temporary password from
+your administrator
+● Navigate to web.gse.harvard.edu/user
+● Enter your username and temporary password
+● On your first login, you will be required to create a new password that contains at least 10
+characters, one of which is uppercase, one of which is lowercase, one of which is a digit, and one of
+which is a non-numeric character (like ! # or %)
+Login Instructions
+Navigate to: web.gse.harvard.edu/user
+● Enter your username and password and select “Log In”
+● You can also “Request new password,” which will send a
+reset link to the e-mail address associated with your
+account
+4
+Creating Content…
+Types of Content
+“Content” is simply information available to the page viewer. There are many different types of
+content, each of which has its own format and requires its own specific elements. This system
+helps to simplify administration of the page and ensure that everything gets formatted correctly.
+Note: each content type has specific permissions, meaning not all users can view or edit all content.
+You will be dealing primarily with:
+Universal Pages: pages available to anyone on the internet, to provide information about your
+office and its functions
+Finding Content
+In Drupal a piece of Content is also called a Node. Each page can have one node or several. There
+are several ways to find content.
+Edit Form
+While logged in as an administrator,
+viewing pages on the website will
+provide you with more options.
+Click on the “Edit” button directly while
+looking at the content you would like to
+change.
+Workbench
+This is a collection of all content listed by title. To access your workbench select
+the “My Workbench” button visible in the top left-hand corner any time you are
+logged in. Content that you have created or edited recently will be listed at the top. You can also
+search for specific content in the list. Content that you have permission to edit will have an “edit”
+option in the Action column at the far right.
+To search for specific content, scroll to the bottom of your Workbench and select “view all.” You can
+scan the list or filter content by entering criteria into the search bar available on this page and
+selecting “Apply.” The content below will change to show only content that matches your search
+criteria. Select “Reset” to get back to a full list of content.
+5
+Bookmarks
+Also available in the top-left of your screen is the Bookmarks section. You can create bookmarks by
+scrolling to the bottom of a piece of Content that you would like to track more easily and selecting
+“Bookmark This.”
+Once you locate the content you were searching for, clicking on a title allows you to view the node as it
+appears on the site. Clicking on edit will take you directly to the edit form.
+Creating Content
+To draft new content, select “Add Content” from the toolbar in the top-left of your screen. You will
+be directed to the “Create Universal Page” section where you can build a new page from scratch.
+For more details about your options on this page, see the Editing Content section on page 7.
+6
+Editing Content…
+If you click “edit” in the content list page or on the page itself you will enter editing mode.
+On the left side you will see a list of tabs, which vary by
+content type and permissions. Each tab reveals different
+fields or page settings. Tabs with red * denote required
+fields. You will not be able to save a page with empty
+required fields.
+Universal Page:
+● Group, Title, Body
+Any page you have permission to edit is
+automatically placed within the correct
+editorial group. You should only click in
+this field to place it there when you are
+creating new content.
+The only required field for creating a
+Universal Page is the ‘Title’ field within this tab. Once you input the title, you will be free to
+save the page and come back to it at your leisure.
+The ‘Body’ field is where you create most of the content that visitors will see when they
+visit the page. Although much of the content will be pre-formatted, this field is comprised
+of a Wysiwyg, which you can read more about on page 9.
+● Accordion
+This tab can be used to create accordions,
+like the one shown at left, which show up at
+the bottom of the page. They include the
+‘Title,’ which shows up condensed in bold,
+and the ‘Body,’ which contains information
+that expands when clicked on. The ‘Body’ tab
+is comprised of a Wysiwyg, which you can
+read more about on page 9. To add more
+elements to an accordion, select “Add
+Another Item” at the bottom of the screen
+● Additional Fields
+○ Under ‘Banner Image,’ you can upload a custom banner image which will show at the top of
+the page. Make sure to follow the resolution and size specifications or the image will not
+load properly.
+○ ‘Sub Headline’ gives you the option of creating a smaller subtitle that appears under the
+headline, but will still be distinct from the body text.
+7
+○ ‘Intro Text’ is a brief paragraph that summarizes the page contents in 250 characters or
+less. It is a plain text function, meaning you cannot add links, pictures, or special
+formatting.
+○ ‘Topic Category’ and ‘Academic Program Category’ are organizational tools that will be
+helpful for people doing a search for specific information that your page may relate to, or
+browsing on another part of the website.
+● Flags
+Check the ‘Bookmark This’ box to add this page to your bookmarks for easy access.
+● Revision Information
+Put information about any changes you have made in this section after making edits. This will
+be available to your editor and can be helpful in streamlining the approval process so that your
+changes get published quickly.
+You can change the page’s ‘Moderation State’ to help your editor know whether or not your
+changes should be published. Selecting “Current: Draft” will not submit your changes for
+editing, but will make them available for you to continue editing later. Selecting “Needs
+Review” will submit your changes for approval and publishing.
+Publishing Content
+After you have finished making changes, return to the ‘Revision Information’ tab and change the
+moderation state to ‘Needs Review.” Then select “Save” on the bottom left side of the page. This
+will send your changes to your editor, who has to approve them before the page goes live on the
+website.
+It is important to assume any changes you submit will be published immediately. Editing
+with this attitude will help you avoid mistakes.
+WYSIWYG (What You See Is What You Get)
+Wysiwygs are designed to make web editing as simple as editing a Word document. Although most
+of the formatting is pre-set to create uniformity across the site, you have some options available
+while composing content within a wysiwyg.
+Common formatting options include: Bold, Italics, ● bulleted and (1) numbered lists, and indentations.
+8
+Our wysiwygs automatically filter out most HTML to ensure that it can’t accidentally break the page
+layout. If you are familiar with using HTML, only the following tags can be used within a wysiwyg:
+● <a> <blockquote> <br> <cite> <code> <dd> <div> <dl> <dt> <em> <i> <img> <li> <ol>
+<p> <span> <strong> <ul>
+● Allowed style properties: text-align
+Advanced Formatting Options
+● Anchor
+Anchors can be used with links to help direct your users to specific areas of your page. Highlight
+a piece of text that you want to use as an anchor and select the button (pictured above). Later
+you can create a link that will direct a user to this location in the body of your page. See the
+section below on Links for more information.
+● Link
+Use the ‘Link’ button in a wysiwyg to create a link that directs your user to specific locations.
+This is also your best option for attaching documents or .pdf’s that you want your viewers to
+have access to. Highlight the text that you would like to make a link and select the button
+(pictured above on the left). Select the link type from the dropdown menu.
+● Creating a URL link directs the user to another website on the internet when clicked.
+This will navigate the user away from your page. It is the only time that the use of
+absolute URLs (like www.website.com/page rather than simply /page) is allowed.
+● Creating an anchor link directs the user to an anchor elsewhere in the text that you have
+already created.
+● Creating an email link opens the user’s default email program and generates a new
+message that includes whatever information you put in the form. You are allowed to
+enter a ‘To’ email address, a Message Subject and some text for the Message Body.
+The user will be able to edit any of these details and choose when to send the message.
+● To attach a document instead, select the “Browse Server”
+option. A new window will open where you will be automatically
+directed to your department’s directory (as shown at left). From
+here, you can select files that have already been uploaded, or
+add your own by selecting the “Upload” button from the top left
+corner.
+9
+If you change your mind and want to delete the link without deleting the text that comprises it,
+highlight the link and select the ‘unlink’ button (pictured above on the right).
+● Linkit
+Linkit is the easiest way to direct your user to another piece of content within the
+GSE website. Select the button (pictured above at right) and input the page you would like it to
+link to. This can be done by typing the content’s title into the search bar, or by searching the site
+directory manually by selecting “Open file browser.” The ‘Link URL’ will populate automatically
+once you locate the content you are looking for.
+● Block Quote
+Designating text as a block quote helps draw attention to certain information. The text will
+show up in larger and different font from the rest of the body, and will have a gray background.
+To create a block quote, highlight the text that you want emphasized and select the button
+(pictured above).
+● Add Media
+Select this button (pictured above) to add images, audio, or video to your page. There are
+several options for you to add media:
+● Upload: Use this option to add files saved on your computer
+○ Pay attention to file size, the maximum file size is 400KB
+● Web: Use this option to add content from elsewhere on the internet. You can do
+this by copying and pasting the URL from the page where this content is stored, or
+by adding an <embed> link provided by the website whose content you are trying
+to link
+○ The site will search for the media you are trying to add, but it is best to use the
+URL of the media itself rather than of a page that contains it
+○ Youtube and soundcloud are currently the only supported providers for
+<embed> links
+10
+● Library: This gives you access to all of the media across the GSE website. There are
+search options that can help you filter the results.
+● My Files: This give you access to all of the media that you have already uploaded to
+the GSE website. There are search options that can help you filter the results.
+11
