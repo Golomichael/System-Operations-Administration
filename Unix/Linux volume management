@@ -1,0 +1,164 @@
+                      Disque naming convention in Linux (centos 6 and 7 or RHEL6/7)
+
+
+sdx ==>> where x =letter
+disk 1 = sda
+disk 2 =sdb
+disk 3 =sdc
+
+
+                    The stucture of a linux Disk
+in Linux we have 4 partitions
+Display all available system disks
+#fdisk -l (will display detail information about the disk)
+#fdisk -l | more
+#fdisk -s /dev/sda  (to display the size of the sda disk)
+-l = Displays details
+-s = size
+#fdisk -s /dev/sda1 (will display the size of the sda1 partition)
+#fdisk -l /dev/sda (display detail information about the disk sda)
+#fdisk -l /dev/sda2 (to display detail info about the partition sda2)
+
+Display limited information about all system disks
+#ls /dev/sd*
+#ls /dev/sda* (will display the partitions of the disk sda)
+
+
+Disk slicing in Linux
+1.Create a 1gb partition in the disk sdb on slice 1
+#fdisk /dev/sdb (to access sdb in format mode)
+:n (to create a new partition)
+:p for primary partition(because we do not want to use the entire disk.
+:1 (to assign storage to partition 1)
+enter (to accept 1 as the default starting cylinder)
+:+1G (to assign 1gb of storage to partition 1) 
+:p (to display the partition table and verify)
+:w (w = write, will save settings and quit to the command prompt)
+verify:
+#ls /dev/sd*
+
+
+2. Format or cook the new sdb1 raw partition
+#mkfs -t ext4 /dev/sdb1
+-t = specify desired filesystem tpe
+ext4 = Extended filesystem version 4
+
+3.Mount the /dev/sdb1 filesystem
+A. create a mountpoint
+#mkdir /class26
+B. mount the filesystem to the mountpoint
+#mount -t ext4 /dev/sdb1 /class26
+
+4.make the mountpoint permanent
+file involved
+/etc/fstab
+fstab  (filesystem table)
+cat /etc/fstab
+
+/etc/fstab field label
+
+field 1= device to mount
+field 2= mountpoint
+field 3= filesystem type
+field 4= defaults (can also be used to assign custom security settings to the filesystem)
+field 5= Perform Backup indexing or dumps at bootup (1 = yes, 0 = no )
+field 6= filesystem check (1 = yes un fsck at bootup, 0= no )
+
+#vi /etc/fstab  (and add the following line)
+/dev/sdb1 /class26 ext4 defaults 1 1
+or
+echo "/dev/sdb1 /class26 ext4 defaults 1 1" >> /etc/fstab
+#cat /etc/fstab to verify
+
+If ther is an error in /etc/fstab , the system will crash at bootup and if in /etc/vfstab in solaris then ssh will go offline after rebooting.
+
+PROJECT
+1.create a 2gb partition on sdb2
+2.format and permanently mount the filesystem at class26a
+3.create a user account for Terry ola and place his home in the /class26a filesystem
+
+Note. the system must be rebooted after slicing before you can cook.
+
+
+1.
+#fdisk /dev/sdb2 
+:n 
+:p 
+:2 
+enter 
+:+2G  
+:p 
+:w 
+reboot before we cook it
+2.
+#mkfs -t ext4 /dev/sdb2
+mountpoint
+#mkdir /class26a
+#mount -t ext4 /dev/sdb1 /class26a 
+echo "/dev/sdb2 /class26a ext4 defaults 1 1" >> /etc/fstab
+
+3
+#useradd -c "Terry Ola" -d /class26a -m tola
+
+
+
+   5. Delete a mounted filesystem
+
+
+Delete the class26 filesystem
+1.Unmount the filesystem
+#umount /class26
+
+2 Delete the line associated with the filesystem from /etc/fstab
+#vi /etc/fstab  (and dd the line associated with /class26)
+3. Delete the filesystem
+#fdisk /dev/sdb
+:d (to delete the filesystem)
+:1 (to select partition 1)
+:p (to display the partition table and verify)
+:w (to save the settings and quit back to the prompt)
+
+4.Delete the mountpoint
+#rm -r /class26 (when you delete in Linux it becomes interactive)
+#rm -f <file>  (will force a file and prevent the system from becoming interactive)
+#rm -rf <directory>
+#rm -Rf <files + directories)
+
+
+#mountall (will mount non system filesystem in Solaris)
+#umountall (will umount all non filesystem in Solaris)
+#mount -a (will mount all non system filesystem in Linux)
+#umount -a (will unmount all non system filesystems in Linux)
+
+
+                                   IMPORTANT!!!!!!!!!!!!!!!!
+
+Resolving a rogue line issue in the file /etc/fstab in Linux
+
+1.Simulate a disaster
+
+#echo "/dev/sdm /hack ext4 defaults 1 1" >> /etc/fstab
+
+2.Disaster recovery
+To fix the rogue line, force the system to single usermode with read and write permission.remove the line from /etc/fstab to fix the issue
+
+A.interrupt the bootup process at the GRUB by pressing A on the keyboard 
+press A again to access the kernel config line 
+Type; rw init=/bin/bash 
+and press enter to force the system to single usermode
+B. Eddit /etc/fstab (and remove or deactivate the line)
+#vi /etc/fstab  (comment (#) line to deactivate it).
+
+                        
+
+                     Rogue line problem in Solaris
+
+
+
+In Solaris , a rogue line in /etc/vfstab will cause ssh to go offline, which will result to a connection refused error when trying to ssh into the system.
+
+SSH will go offline in Solaris if ;
+1 There is a rogue line in /etc/vfstab
+2.There is an ip adress conflict with another system
+3.Hostname configuration error. If the hostname of the system is different from the hostname found in the files /etc/hosts ; /etc/hostname.e1000g0 or /etc/nodename, then ssh will go offline at reboot. 
+
