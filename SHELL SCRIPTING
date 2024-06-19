@@ -1,0 +1,177 @@
+                      SHELL SCRIPTING
+
+What is a Shell script?
+It is a sequence of system commands pasted in atext file.
+
+Basic step to execute a bash shell script
+$echo $SHELL (to display shell)
+$chsh (to change shell) 
+
+How to write a script
+1. Get manual commands for the requirement
+2.  Select any command line editor
+3. Write a bash shell script
+Cresate a file with extension "sh"
+Write first line as shebang line (the shell we are using to create the script)
+Shebang line : #!/bin/bash
+Paste it into the file
+Give execution permission : chmod +x demo.sh
+Run the script using "./"
+
+           General purpose command
+#what is pwd  (will give you the usage of pwd
+
+
+           Redirection Operators & STDIN, STDOUT, STDERR
+A) Output redirection redirector( > , >> )
+
+#ls -lrt file > demo.txt
+
+B) Input redirection operators ( < )
+To provide the input
+
+C) Combining redirection output ( | )
+
+File descriptor is simply an integer number to identify STDIN, STDOUT and STDERR
+.0 : STDIN
+.1 : STDOUT (success output)
+.2 : STDERR (error output)
+ example: ls 1>demofile  ls 2>demofile
+
+          Command to read a file content
+vi editor (will open the file and display content)
+cat (will display content) "cat -n (will display content with line number)"
+less (will display content page by page)
+more (will display line by line)
+
+        Command to read a file with conditions
+more -2 ( will display the 2 first line and press enter to continue reading)
+more +2 (will display until the wanted line)
+head -2 (top 2 lines appear)
+tail -2 (last 2 lines appear)
+
+
+        How to read /view/display required range of lines from a given file?
+
+example: dispaly from 2nd to 10th line
+
+we can combine tail and head command
+awk command
+sed command
+
+   Basic usage of grep command
+Grep is a filter command
+example : grep host /etc/hosts 
+will display lines with the word "host"
+NB: user quotation for more than one word
+-i-w-v-o-n-c -A-B
+-i (will ignore case sensivity)
+-w (will display the exact word match)
+-v (will display line that doesn't have the word wanted in it)
+-o (will display only the word wanted but not the lines
+-n (will display line numbers)
+-c (will doisplay how many lines that has the word wanted)
+-A ( will display the line after the match)
+-B (will; display the line before the match)
+-C (will display n lines around the match
+-r (will check match in subdirectories)
+* (will display in the current directory)
+-h (will display file names with match)
+
+                Advance usage of grep command
+
+-f (Takes search string in file)
+create a file paste string inside and run the command
+$grep -f filename (filename where the strings are stored)
+
+-e (used to search multiple strings)
+$grep -e "line" -e "above" -e "mike"
+
+-E(will do the same thing as -e option)
+$grep -E "line|abobe|mike"
+pattern combination of string
+ 
+Rules to create a pattern
+xy|pq matches xy or pq
+
+^xyz (will display line that start with word wanted)
+$grep -E "^this"
+
+xyz$ (will display line that end with word wanted)
+
+^$ (will display empty lines) 
+
+\ (will line with specific symbol)
+
+$grep -E "\^" (will display line with this particular symbol)
+
+"." (any character)
+
+$grep -E "\." (exactly line with .)
+
+\b (will display match at the edge of word)
+$grep -E "\blines" (will display the lines that has space before the word line)
+$grep -E "line\b" (will display line that has space after the string"
+
+? (the preceding character is optional and will match at most, once)
+$grep -E "yf?" (will display all line with "yf" and word that has at least one "f").
+
+* (the preceding character will be matched zero or more times)
+$grep -E 
+
++ (the preceding character will be matched one or more time)
+
+[xyz] (will display lines that has x or y or z)
+$grep -E [xyz]
+
+[a-d] (will display words that has a to d letters)
+[a-dp-z] (will do  the same thing)
+
+^[abc] matches for the lines which are starting with a/b/c
+$grep -E "^[abc]"
+
+{N} (number of letter)
+$grep -E "xf{3} (will display line with 3f "fff"
+$grep -E "xf{2,} (will display line with at least 2f)
+
+[[:digit]] (will print the line that has digit in it
+[[:upper:]] (will display lines that has upper case alphabet)
+
+practice:
+display ipv4 adresses from a file 
+$grep -E "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}" filename (will display each octet from o-9 and number can be repeated 1,2 or 3 times.)
+
+                     The Cut command
+
+Cut command is used to extract parts of each line from a line
+It is based on:
+Byte position
+Character position
+Field based
+
+$cut -c 1 /etc/passwd (will display 1st character in this line)
+$cut -c 1-10 (from 1 to 10th character)
+$cut -c 4- (from 4th to the end)
+$cut -c 1,2 ( 1st and 2nd character)
+
+The cut command will work if fiels are seperated with tab otherwise it will take line seperated by spaces as 1 field. we hav to mention the field separater
+$cut -f 1 /etc/passwd (will display 1st field)
+$cut -d ':' -f 1,4 /etc/passwd (will display 1st and 4th field seperated with column.
+-d (will precise the delimiter)
+$cut -d ':' -f 1,4 --output-delimiter="|" (will display both character separated by column and pipiline)
+$cut -sf (will ignore delimiter and use the one by default).
+
+
+
+                   AWK Command
+the difference is for cut command youn can get character and field but awk will display only field.
+
+$awk '{print $4}' /etc/passwd ( will display 4th field)
+$awk -F  (will specify the delimiter)
+$awk -F [/] '{print $4}' (will display 4th field separated by /)
+$awk '{print $4,$5}' /etc/passwd (will display 4th and 5th field)
+we can even reverse field with awk command.
+$awk '{print NR}' /etc/passwd (will display the number of line in /etc/passwd)
+$awk '{print NR,$0}' /etc/passwd (display all file with nuber of lines)
+NF (will print number of field from each line/record
+
