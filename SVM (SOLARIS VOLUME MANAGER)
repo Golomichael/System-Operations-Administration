@@ -1,0 +1,162 @@
+         SVM (SOLARIS VOLUME MANAGER)
+
+To create svm volumes , a stste database must be created first. The state database is a container of svm called metadevice. These components include disksets, concat and stripe volumes and well as soft partitions.
+
+IQ: 1st thing to do to set up svm is creating a state database
+
+A state database is recommended to be createwdon a unique slice. the partition cannot be used for anything else. It is recomended to have at least 3 state databases on a system for redundancy purpose
+
+1 )Creating an SVM volume
+
+disk1
+s0 = 100mb ==> state database
+s1 = 500mb 
+s3 = 500mb 
+s4 = 500mb 
+
+devsadm
+iostat -En
+#format
+
+slice
+
+#newfs /dev/rdsk/c0t4d0s0 ==>s1,s3.s4
+
+Display the volume table of content of the sliced disk
+#prtvtoc /dev/rdsk/c0t4d0s2 ( It will display only sliced partitions)
+
+
+2)disk2
+copy the volume table of content from disk1 to disk2.
+Disk2 must be fdisk before it can receive the vtoc of disk1
+#fdisk /dev/rdsk/c0t5d0s2
+
+copy vtoc
+#prtvtoc /dev/rdsk/c0t4d0s2 | fmthard -s- /dev/rdsk/c0t5d0s2 (this will slice disk2)
+#prtvtoc /dev/rdsk/c0t5d0s2 (to check)
+add file system
+s0,s1,s3,s4
+
+II) 
+1)Create 4 copies of the state database on c0t4d0s0 and c0t5d0s0
+#metadb -a -f -c2 c0t4d0s0 c0t5d0s0
+-a = add
+-f = force
+-c = 2 copies on each slice
+
+verify
+#metadb (will check disk label)
+#metadb -i 
+
+delete database
+#metadb -d c0t4d0s0 ( it will delete all state databases on the partition)
+
+2)Create an SVM soft partition on c0t4d0s1 (100mb)
+#metainit d10 -p c0t4d0s1
+d10 = soft partition label (any number but it has to be d "something")
+-p = soft partition volume
+verify
+#metastat (will display detailed info)
+#metastat -p
+#metastat -c
+
+a.Format the soft partition
+#newfs /dev/md/rdsk/d10
+
+b.Mount the soft partition
+#mkdir /soft1
+#mount /dev/md/dsk/d10 /soft1
+df -h (to verify)
+
+c.Make the mount point permanent
+#echo "/dev/md/dsk/d10 /dev/md/rdsk/10 /soft1 ufs 1 yes -" >> /etc/vfstab
+verify
+tail -1 /etc/vfstab
+
+Expand the soft partition by 100mb
+#metattach d10 100m
+#metastat -c (to verify)
+we will have to add blocks because the foundation has been extended.
+#growfs -M /soft1 /dev/md/rdsk/d10
+-M = specify mountpoint
+or
+#growfs /dev/md/rdsk/d10 (for unmounted filesystems)
+
+Delete a volume in SVM (delete d10 volume)
+a.Unmount the volume
+#umount /soft1
+
+b.Remove related line from /etc/vfstab file
+#vi /etc/vfstab and dd the line associated with /soft1
+
+c.Delete the soft partition 
+#metaclear d10
+
+SVM RAID
+
+SVM has 2 kinds of RAID volumes
+a. The concaternation volume (concat volume)
+It stores data vertically from one disk to another (from top to bottom).
+
+b.Stripe volume sets
+Data is stripped accross the disks in ahorizontal manner in chunks of blocks reffered to as the interplace blocks
+
+concat volumes store data in the disk using only one disk arm at a time while stripe volumes can store chunks of data using 2 or more arms at a time hence stripe volumes are faster in input/output (read/write operations than concat volumes.
+
+
+
+A. RAID 0
+
+a.Create a concat volume set using c0t4d0s1 and c0t5d0s1
+#metainit d0 2 1 c0t4d0s1 1 c0t5d0s1 (This will create 1 volume called d0 from the 2 disk sets, 1 c0t4d0s1 and 1 c0t5d0s1)
+#metastat -p (to verify. it will display the structure)
+#metastat -c (will display the size)
+
+b. Create va stripe volume set using c0t4d0s3 and c0t5d0s3
+#metainit d1 1 2 c0t4d0s3 c0t5d0s3 (This will create 1 volume called d1 using 2 disk sets c0t4d0s3 c0t5d0s3)
+#metastat -c (to verify)
+#metastat -p (for structure)
+When you see intrlace that means it is stripe volume sets
+
+delete d0 and d1
+#metaclear d0 
+#metaclear d1
+
+B. RAID 1
+Create a RAID 1 volume called d10 from to stripe volume sets
+1 create the volume sets
+#metainit d0 1 1 c0t4d0s1
+#metainit d1 1 1 c0t5d0s1
+
+2. Create the one way mirror set by attaching the first submirror volume
+#metainit d10 -m d0
+
+3. Attached the second submirror to raid 1 volume
+#metattach d10 d1
+
+
+Convert a mounted filesystem to an svm volume, then expand the filesystem
+
+convert /export/home into an svm volume and expand it.
+
+1.Convert /export/home into an svm volume
+#metainit -f d7 1 1 c0t0d0s7 (This will convert /export/home into a volume)
+#metastat -c to verify
+
+2.Modify /etc/vfstab to reflect the change
+vi into /etc/vfstab
+/dev/md/dsk/d7 /dev/md/rdsk/d7 /export/home ufs 2 yes -
+
+3.Reboot the system gracefully
+#init6
+
+Add 5GB disk cook and slice it
+
+4.Verify if /export/home is now on a metadevice
+#df -h
+
+5.Expand the /export/home volume (It is a RAID 0 expansion)
+d7 + c0t6d0s7 = 26gb ( from 21gb)
+#mettach d7 c0t6d0s7
+#metastat -c (to verify)
+#growfs -M /export/home dev/md/rdskd7 (to expand the mount point)
