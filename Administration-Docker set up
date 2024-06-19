@@ -1,0 +1,127 @@
+Customer technical support questions and troubleshooting
+
+The costumer is always right 
+so I can not argue with the costumer
+Icannot justify or defend myself nor a fellow Associate, nor my company.
+-I cannot lectur the costumer about rules while he is upset
+-I have to appologise and accept any blame. I cannot blame my fellow associate or my company
+-I will do everything to help resolve your problem ASAP
+-Keep the costumer constantly updated
+
+the system try to reboot and he failed at reboot
+probably the system failed because of a rogue line or an erraneous line in the file /etc/fstab.
+Tell to the costumer you found bad settings, it was a mistake that we made. we will have a meting and get to the bottom of it.
+
+what can you do to prevent this? 
+
+#who -b will display the server last reboot
+#last | grep reboot
+
+
+
+                      DOCKER Server Setup
+-Used to create an manage containers
+-Containers are used to run instances of applications or operating systems that are independant of the underlining architechture or platform
+
+Install and configure Docker in Centos7/RHEL7
+
+1. Intall Docker Preriquisite packages
+#yum update -y
+#yum install -y yum-utils device-mapper-persistent-data lvm2
+
+2.Add a yum repo
+#yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+
+#yum-config-manager --add-repo https://download.docker.com/linux/centos/7/x86_64/stable
+
+3.Install docker
+#yum install docker -y
+
+4.Start the Docker daemon
+#service docker start
+#chkconfig docker on
+
+5.Disable selinux
+#getenforce (to display selinux status)
+#setenforce 0
+#vi /etc/sysconfig/selinux (and disable selinux)
+
+6.Verify
+#docker info
+#docker --version
+
+Display all installed containers
+#docker ps
+
+Install an apache container in docker
+#docker run -itd --name apache1 -p 7880:80 -v /home/usr/website:/usr/local/apache2/htdocs/ httpd:2.4
+
+run (install container) Docker will connect to an online repo, pull or download the image of the container and install it in the local system
+-it = Configure the container so that the admin can connect to its terminal
+-d = detach (run container in the background)
+--name = assign a lablel to the container
+-p (bind "associate" container's default prt with local port)
+-v (Map a directory inside of the container to your local system)
+httpd:2.4 (Name of the desired application image to be installed)
+
+#docker ps (to display all active containers)
+or
+#docker ps -a (will give more details active and inactive container)
+
+Access the terminal of the container
+#docker exec -it apache1 /bin.bash
+#exit (to exit container back to the local system
+
+Access the apache webserver from the browser
+http://192.168.1.224:7880
+since we "winscp" the demowebsite we have to rename it index.html so you do not have to specify
+
+since the port 80 is the docker port , it is not directly connected to our LAN so we briged or forwarded the port to 7880.From now we can access the website with a browser using 7880 port.
+
+Troubleshoot: Having an error in httpd.conf file will turn off the daemon.
+1.Check if httpd daemon is up and running 
+#service httpd status
+#service httpd start (to start the daemon)
+2. find out that port are not listening
+verify if port 80 was opened in the firewall
+#firewall-cmd --list-port (if the port has been added by port this outpput will apear)
+#firewall-cmd --list-service (if added as a service this output service will apear).
+
+
+Configure an nginx web server container in Docker
+#docker run --name nginx25 -it -v /home/docker25:/usr/share/nginx/html -p 4000:80 -d nginx
+#docker ps (to verify)
+Open up port 4000 on the firewall
+#firewall-cmd --permanent --add-port=4000/tcp
+#firewall-cmd --reload
+
+Access the nginx website from a browser
+http://192.168.1.224:4000
+
+Install and configure a Centos Server container in Docker
+#docker run --name centos25 -it --privileged -p 6060:80 -v /docker/centos25:/home -d centos /usr/sbin/init
+#docker ps
+
+Execute a command on the centos25 container from the docker host
+#docker exec centos cat /etc/centos-release  ((((2h37mn)))))
+#docker exec -it centos25 /bin/bash
+#yum update -y
+Create a user student and assign him a password
+#yum install passwd -y ( an Operating system will be limited in docker)
+
+Install the ssh daemon in RHEL8
+#yum install -y openssh-server
+#systemctl start sshd
+#systemctl enable sshd
+#systemctl status sshd
+
+Get the ip adress of the Docker Container
+#ip a (from docker host will display the Network Address link to the Docker virtual NIC. The Docker IP is bridged to the local Host IP)
+
+Get the specific IP address of the container from the host system
+#docker inspect -f "{{ .NetworkSettings.IPAddress }}" centos25
+
+ssh into centos25 from the host using its IP address
+
+#ssh student@172.17.0.4  [[3h19]]
+
