@@ -1,0 +1,227 @@
+Proprietary UNIX/LINUX backup tools
+
+1. Tar
+2. CPIO
+3.Rsync
+
+3rd party Backup Application
+NetBackup
+
+Types of Backups
+
+1. Full Backup
+2. Incremental Backups (usually over the weekend saturday when nobody is at work)
+3. Differential backup
+
+
+
+
+A. TAR Backup tool
+1. Perform a full backup
+#mkdir /export/home/backup
+#chmod 777 /export/home/backup
+#cd /export/home/backup
+#tar -cvf mluther.tar /export/home/mluther/*
+#ls /export/home/backup
+
+2. Display the content of backup tar file
+#tar -tf mluther.tar
+t = table of content
+
+3. Perform a full restore
+cd /export/home/mluther
+#tar -xvf /export/home/backup/mluther.tar
+#ls (to verify)
+
+4. Restore individual component
+#cd /export/home/mluther
+#tar -xvf /export/home/backup/mluther.tar /export/home/mluther/passwd
+
+
+
+CPIO (Copy Input Output)
+1. CPIO File Dump
+2. CPIO Passthrough
+
+a) Perform a full backup of mluther's home using CPIO file dump
+#cd /export/home/mluther
+#find . -print -depth | cpio -oc > /export/home/backup/mluther.cpio
+-o = output
+-c = in ascii format (asky)
+#ls /export/home/backup to verify
+
+
+b. Display the content of the CPIO backup dump file
+#cd /export/home/backup
+cat mluther.cpio | cpio -it
+-i = input
+-t = table of content
+
+c) Perform a full restore
+create a disaster (delete everything first) 
+#rm -Rf *
+then
+#cd /export/home/mluther
+#cat /export/home/backup/mluther.cpio | cpio -icd
+-d = Re-create directories as required
+
+d) Perform an individual component restore
+#cd /export/home/mluther
+#cat /export/home/backup/mluther.cpio | cpio -icd "passwd"
+
+
+
+
+
+CPIO Passthrough (data migration)
+he is different form the copy command because the copy will miss the subdirectories and the permissions but cpio passthrough will copy the integrality of the file.
+
+#cd /export/home/backup
+#mkdir luther
+#find . -print -depth | cpio -pdm /export/home/backup/luther
+-p = passthrough
+-m = do not modify component attributes
+ls /export/home/backup/luther
+
+C. Rsync Backup Tool
+#cd /export/home/backup
+#mkdir luther1
+1) Perform full backup
+#rsync -azP luther/ mluther1 (if you put / it will backup the content not the directory itself)
+a = archive (recursive, maintain component attributes)
+z = compress
+P = display progress
+
+2) Incremental backup
+
+#touch luther/test
+#rsync -azp luther/ mluther1
+
+3) rsync data from one server to another
+#rsync -azp luther242 student@192.168.1.206:/export/home/student/luther242
+
+Write a  script to perform full and incremental backups using rsync
+
+
+#echo Mon > day
+#echo Tue >> day
+#echo Wed >> day
+#echo Thu >> day
+#echo Fri >> day
+#echo Sat >> day1
+
+#vi backup.sc (and enter)
+-------------------------------------------------------------------------------
+y=`date | awk '{print $1}'`
+
+if
+
+ test grep $y day >> /dev/null
+then
+rsync -azP luther/ luther1
+elif
+ test grep $y day1 > /dev/null
+mkdir full_backup.`date +%m%d%Y`
+rsync -azP luther/ full_backup. `date +%m%d%Y`
+fi
+---------------------------------------------------------------------------
+(creer 2 file day and day1 pour samedi)
+y is variable
+if test grep $y day > /dev/nul est positif (on le met ands /dev/nul pour ne pas avoir the junkfile.example: date ) donc samedi le test sera negatif 
+THEN
+rsync -azP luther/ luther1 
+elif  (negatif)
+ test grep $y day1 > /dev/null ( le test sera confirme 
+mkdir full_backup.`date +%m%d%Y`
+rsync -azP luther/ full_backup.`date +%m%d%Y
+fi
+ dimanche le test sera negatif
+
+Schedule the script to run every day at 11pm
+#export TERM=vt100 EDITOR=vi
+#crontab -e
+00 23 * * * /export/home/backup.sc
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
