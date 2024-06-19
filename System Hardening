@@ -1,0 +1,521 @@
+                    System Hardening
+It has to with making the system more secured so as to prevent unauthorized access.
+-Monitoring
+-Vulnerability management (root login vulnerability, Disable vulnerable Daemons==>> FTP,telnet,rlogin,finger,password policy)
+
+
+                        User access monitoring
+
+1.Display the user logged into or a shell
+#who am i (solaris)
+#whoami (Linux)
+#logname (it will display the name of the user)
+
+2.Display all users logged into the the system
+#who
+#w
+#whodo
+
+3.Display the previous login sessions of the user as well as the last reboot and boot session of the system.
+#last
+#last student (to display last login sessions of student)
+#last | grep student (to display last login sessions of student)
+#last student | head -1 (to display the most recent last login session of student)
+#last reboot (to display the last reboot sessions of the systems)
+or
+#last | grep reboot
+#last reboot | head -1 (will display the most recent last reboot session)
+or
+#who -b
+
+
+    Displays SU logs ( logs are stored in the file systems in the /var  directory)
+
+File involved:
+/var/adm/sulog
+#cat /var/adm/sulog (to display su logs)
+
+
+Display all system logs
+Types of logs:
+Warning logs
+Informational logs
+Critical logs
+
+#dmesg (will display all system logs)
+System logs are stored at;
+/var/adm/messages (for Solaris)
+/var/log/messages (for Linux)
+
+#cat /var/adm/messages (to display system logs in Solaris)
+#cat /var/log/messages (to display system logs in Linux)
+
+
+   Display authentication logs
+Linux:
+#aureport -au -i (will display all system authentication logs),(successfull and unsuccessfull logins).
+#aureport -au -i | grep yes (will display successfull logins attempts)
+or
+#aureport -au -i --success
+
+#aureport -au -i | grep no (will display  unsuccessfull logins)
+or
+#aureport -au -i --failed
+
+  A) Failed login attempt monitoring in Solaris
+1. Capture every 5th Failed login attempt
+File involved
+/var/adm/loginlog
+
+Configure the system to capture every 5th failed login attempt
+#touch /var/adm/loginlog
+#chmod 600 /var/adm/loginlog  (to change permission)
+#chgrp sys /var/adm/loginlog  (to change file group)
+
+
+Mdodify the file 
+/etc/default/login
+
+#vi into /etc/default/login (and modify as follows)
+SYSLOG_FAILED_LOGIN=0
+(Uncomment the line and change the value from 5 to 0 to enable failled login attempt capture)
+
+Simulate Failed Login attempts via telnet
+#cat /var/adm/loginlog (to verify)
+
+ Configure the system to capture every single failed login attempt
+#cat /var/adm/authlog  
+
+ 
+                Root terminal access management
+Root terminal access is not enabled by defautin Solaris but it is enabled in Linux.
+
+Solaris root terminal access management
+File involved:
+/etc/default/login
+
+Setting involved 
+CONSOLE=/dev/console  (means rootcan only login from the console. Comment out "#" this line to grant teminal login to the root account).
+
+
+
+Linux root terminal access management
+File involved:
+/etc/ssh/sshd_config
+
+Configuration involved:
+#PermitRootLogin=yes   (vi into the file and type "/Permit" to find the line because itr is a huge file) 
+
+To prevent root terminal login;
+-uncomment the line
+-change the value from yes to no
+#service sshd restart
+
+Disable all user login
+#touch /etc/nologin
+
+If the nologin file is pesent in the /etc directory the system will prevent users from logging into the system except root.
+
+#rm /etc/nologin (to re-enable user login).
+
+FTP Management in Solaris
+
+File Transfer Protocol
+Used to store and transfer files 
+
+The FTP Server stores files while the FTP client is used to transfer files. FTP is a vulnerable protocol because it transmits data in clear text via port 21.
+3rd party FTP server/client software: Filezilla
+
+The Solaris server comes with a fully configured and functional ftp server
+
+To connect to the Solaris ftp server, go to a browser and type;
+ftp://<your server's IP>.
+example: type "last reboot > /export/home/student/lastreboot.txt" if you need to print this file on a unix server and doesent know how to do it you can use this method to send it on file of your choice to print it.
+PS:make sure to use .txt (for the file you are creating).
+
+Linux ftp
+Vsftp (Very Secure FTP)
+to connect a client into a server should use another server and type 
+"ftp <IP adress>. when inside you can type help to get an idea of command you can use because it is not a bash shell 
+
+
+Remote login using terminal emulation protocol
+#ftp 192.168.1.206 (Solaris only)
+#telnet 192.168.1.225 (Solaris only)
+#ssh student@192.168.1.255 (Multiplatform)
+#rlogin -l student 192.168.1.255(Solaris only)
+
+Managing ftp access in Solaris
+
+File involved:
+/etc/ftpd/ftpusers
+
+Place the login name of a User into the ftpusers file to deny the user ftp access.
+
+
+
+                       Daemon management
+
+
+A) Daemon management in Solaris
+
+1. Display all system daemons in Solaris
+#svcs 
+#svcs -a
+#svcs | grep ftp (will display the status of ftp daemon)
+or
+#svcs ftp (will do the same thing)
+#inetadm ( will display network daemons)
+#inetadm | grep ftp ( display the status of ftp)
+
+2.Disable a daemon
+svcadm (service admin)
+#svcadm disable ftp
+#svcs ftp (to verify)
+
+3.Enable a Daemon 
+svcadm enable ftp
+#svcs ftp (to verify)
+
+4)Restart a Daemon
+#svcadm restart ftp
+or
+#inetadm -d ftp (to disable ftp)
+#inetadm -e (to enable the daemon)
+-d = disable
+-e = enable
+
+
+B) Daemon management in Linux (Centos 6 and RHEL 6)
+1. Display all system daemons in linux
+#service --status-all
+
+2.Display the status of a daemon
+#service sshd status
+
+3.Enable a daemon
+#service sshd start
+#chkconfig sshd --level 35 on (to make it permanent)
+
+4.Disable a daemon
+#service sshd stop
+#chkconfig sshd --level 35 off 
+#chkconfig sshd --list (to verify)
+
+5. Restart a daemon
+#service sshd restart
+
+
+             UNIX/LINUX Password policy
+1.Password complexity
+2)Password aging
+
+
+            Password complexity
+Involves making your password complex so it is more difficult for an intruder to guess your password.
+
+                A) Password complexity settings in Solaris
+File involved
+/etc/default/passwd
+1)PASSLENGTH =6
+To specify the minimum number of Character that must be in a password
+
+2.NAMECHECK = NO
+If set to no the a user's login name can be included in their password. If set to yes then login names ca not be included in the password.
+
+3. HISTORY = 0
+determines how many recently used passwords should be cashed password cannot be re-used.
+
+4.MINDIFF = 3
+Minimum difference, new password must be at least 3 characters different from old password
+
+5.MINALPHA=2
+Specify minimum number of alphabetical characters
+
+6.MINNONALPHA=1
+Minimum  number of non alphabetical number. (example: numbers and special characters)
+
+7.MINUPPER=0
+Minimum number of upper case letters
+
+8.MINLOWER=1
+Minimum number of lowercase
+
+9.MAXREPEATS=0
+Maximum number of repeated characters
+
+10.MINSPECIAL=0
+Minimum number of special character
+
+11.MINDIGIT=0
+Minimum number of digits (0-9)
+
+12.WHITESPACE=YES
+Blank spaces
+
+13.DICTIONLIST=
+List of dictionary words that must not be included in a password
+
+
+B) Password complexity settings in Linux
+Files involved:
+/etc/pam.d/system-auth
+Line involved:
+password requisite pam_cracklib.so try_first_pass retry=3
+type=
+
+Solaris                Linux
+PASSLENGTH             minlen
+MINUPPER               ucredit
+MINLOWER               lcredit
+MINDIGIT               dcredit
+MINSPECIAL             ocredit
+MINDIFF                difok
+
+
+Configure a password aging policy in Linux as follows;
+Password should have:
+At least 2 Uppercase letters
+At least 2 Lowercase letters
+At least 3 numbers
+At least 1 special character
+Password length should be at least 10 characters
+Password should be  at least 6 characters different from the previous password.
+
+#vi /etc/pam.d/system-auth (and add the following line).
+password requisite pam_cracklib.so try_first_pass retry=3
+(delete "type").
+minlen=-10 ucredit=-2 lcredit=-2 dcredit=-3 ocredit=-1 difok=-6
+u = upper
+l = lower
+d = digital
+o = other for special character
+difok = minimum difference
+
+- Value = rule is strictly enforced
++ Value = rule is optionally enforced
+
+
+Lock a User account
+#passwd -l bbush
+l = lock
+Verify:
+#grep bbush /etc/shadow  (an "LK" in the password encryption field means the account is locked.
+#grep LK /etc/shadow (to display all locked account)
+
+#passwd -u bbush (to unlock the account)
+u = unlock
+
+Verify:
+#passwd -s bbush (to display the password status of the account)
+#logins -xl bbush (Solaris command only)
+
+UP= Unassigned password or unknown password
+NP= Account has no password. Passowrd has been deleted
+
+#grep UP /etc/shadow (will display all accounts with unassigned passwords)
+
+PS = Password Assigned
+
+Password reset
+
+#passwd bbush
+#passwd -d bbush (to delete her current password . She will be prompted to create a new password at next login)
+
+Display all accounts with deleted passwords
+#logins -s (Solaris Only)  (-1-1-1 means the min max warn value has not been set)
+
+#passwd -f bbush (Solaris only)
+-f = force a password reset. (The User will be prompted to login one last time after which his password will expire and he will be required to create a new password 
+
+passwd -f
+passwd -l
+passwd -u
+passwd -s
+passwd -d
+
+
+How to Expire passwords
+#passwd -f <login> (for Solaris)
+#passwd -e <login> (for linux)
+-e = expire password
+
+
+The /etc/shadow file
+
+Field 1 = Login or username
+Field 2 = Password Hash or encryption
+Field 3 = Date and time of last password reset (The number of days that have elaped ,since Jan 1st 1970, when the password was last reset.)
+Field 4 = Min value
+Field 5 = Max value
+Field 6 = Warn value
+Field 7 = Inactive Days
+Field 8 = Account expiration date
+
+
+               Password Aging in Unix/Linux
+It has to do with forcing user to change their password every now and then.
+it is also called password recycling
+
+A)Password aging in Solaris
+
+Max Value = It is the maximum number of days that an account that an account can stay active before the password expires.User account will be locked after the password expires. The max value is the trigger setting for password aging.
+
+Min Value =  It is the minimum number of days that an account must be active before the user is allowed to change his password from the date of last password reset
+
+Warn value = It is the number of days that a User will be warned of a pending password reset before his or her account expires.
+
+
+Configure password aging for bbush so that her password will routinely:
+-Expire in 30 days
+-She is not allowed to reset her password whithin 15 days from the last password reset date 
+-She must be warned of a pending password reset countinuously for 5 days before her password expires.
+
+#passwd -x 30 bbush (to configure the max value)
+x = max value
+verify:
+#grep bbush /etc/shadow
+or
+#logins -xl bbush
+
+#passwd -n 15 bbush (to set the min value)
+n = min value
+#logins -xl (to verify)
+or
+#grep bbush /etc/shadow 
+
+#passwd -w 5 bbush (to set the warn value)
+w = warn value
+#logins -xl bbush
+or grep bbush /etc/shadow
+
+OR
+
+#passwd -x 30 -n 15 -w 5 bbush
+
+Server wide password aging in Solaris
+File involved:
+/etc/default/passwd
+
+Settings involved:
+MAXWEEKS= 
+MINWEEKS=
+
+B)Password aging in Linux
+
+Configure a password aging policy for ken Forty as follows:
+Max value = 30
+Min value = 10
+Warn value = 5
+
+#Passwd -x 30 -n 10 -w 5 kforty
+#grep kforty /etc/shadow (to verify)
+#chage -l kforty (to verify)
+
+#passwd -x 0 kforty (will expire the current passwd, and will prompt the User to create a new password at net login, then will disable password aging for the account)
+
+#passwd -x -1 kforty (will disable password aging but will not expire the Users password)
+
+Using the chage command to configure password aging in Linux
+Configure a password aging policy for kforty as follows using the chage command:
+Max value = 45
+Min value = 15
+Warn value = 7
+
+#chage -h (will display the options of the chage command)
+#chage -d 0 kforty (to expire the users password and disable password aging)
+#chage -E (will set the expiration date for an account)
+#chage -I (will set account inactive time)
+#chage -m (will set min value)
+#chage -M (will set max value)
+#chage -W (will set warn value)
+
+#chage kforty (will configure password aging for kforty via wizard)
+#chage -l kforty (to verify)
+
+
+Server wide password aging in Linux
+File involved:
+/etc/login.defs
+
+Project
+
+1.Configure password aging for every user in schoolcentos as follows:
+Max value = 30
+Min value = 15
+Warn value = 5
+
+2. Configure password complexity in schoolcentos as follows:
+password must have:
+-At least 2 Uppercase characters
+-1 number
+-2 lowercase character
+-1 special character
+-A manimum length of 12
+-Must be at least 5 character different from the last password
+
+since we already have a min value of 15 this won't allow us to create a new  one. we have to change it.
+passwd
+
+Create a new password for kforty = GOLOmichael2289@ (a ne pas oublier).
+
+
+
+
+                  Capture and analyze traffic in UNIX/LINUX 
+                
+     A) Capture and analyze traffic in Solaris using the snoop command.
+
+1.Capture and analyze all traffic flowing through the NIC 
+#snoop
+
+#snoop can be used to check for system connectivity.
+
+2. Display traffic from a specific port
+#snoop port 22
+#snoop port 23
+#snoop port telnet
+
+3.Display traffic from a specific protocol
+#snoop udp
+
+4.Display traffic from a specific host
+#snoop 192.168.1.1
+
+5.Capture data from a specific NIC
+#snoop -d e1000g0
+
+6.Capture traffic into a file
+#snoop -o /snoopfile
+-o = output
+#snoop -o /snoopfile
+
+Analyze or display data that has been captured into a file
+#snoop -i /snoopfile
+-i = index
+
+
+      B)  Capture and analyze traffic in LINUX
+1. Display all traffic flowing into and out of a system
+#tcpdump 
+
+2. Display traffic from a specific port 
+#tcpdump port 22
+
+3. Display traffic from a specific protocol
+#tcpdump udp
+
+4. Display traffic from a specific host
+#tcpdump 192.168.1.1
+
+5. Capture traffic into a file 
+#tcpdump -w /dumpfile
+-w = write
+
+6. Display captured traffic from file
+#tcpdump -r /dumpfile
+-r = read
+
+7. Display traffic from a specific interface
+#tcpdump -i eth0
+-i = interface
