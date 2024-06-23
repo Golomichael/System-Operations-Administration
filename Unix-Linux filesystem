@@ -1,0 +1,58 @@
+A filesystem serves as a fundamental component of an operating system (OS).
+
+Windows Filesystem Types:
+
+FAT (File Allocation Table)
+FAT32
+NTFS (New Technology File System)
+RAW Disk:
+A RAW disk refers to a disk that has no filesystem and has not been formatted yet. Before any data can be stored on a RAW disk, it must be formatted to create a filesystem.
+
+Formatting:
+Formatting is the process of creating a filesystem on a disk.
+
+Common Filesystems:
+
+UFS (Unix File System): Default filesystem for Solaris.
+XFS (X File System): Default filesystem for RHEL 7/8 and CentOS 7/8.
+EXT (Extended File System): Default filesystem for RHEL 6 and CentOS 6.
+NFS (Network File System): Used for sharing directories in Linux and Unix.
+CIFS (Common Internet File System): Used by Linux systems to mount Windows or Samba shares.
+MntFs (Mount File System): Manages all system mount points.
+HsFs (High Sierra File System): Used in Solaris to mount optical media.
+LoFs (Loop Back File System): Used to mount optical media in Linux.
+TempFs (Temporary File System): Temporary storage for files during OS and application installation.
+Swapfs (Swap File System): Supports running applications and the OS by providing temporary storage.
+Process and Device Filesystems:
+
+Procfs (Process File System): Manages all system processes.
+Devfs (Device File System): Manages all system hardware and their respective device drivers.
+Components of Devfs:
+
+/dev Directory:
+
+Stores logical names of system hardware devices.
+A logical name is a label assigned to a hardware component by the OS.
+Administrators interact with hardware devices using their logical names (e.g., e1000g0 for a network interface card).
+/devices Directory:
+
+Stores system hardware physical names.
+A physical name is the OS's description of the hardware component’s device driver.
+The OS interacts with hardware components using their physical names.
+/etc/path_to_instance File:
+
+Stores instance names of system hardware devices.
+An instance name is the kernel's abbreviation of the physical name.
+The kernel interacts with hardware devices using their instance names.
+Cheat Sheet:
+
+Devfs:
+/dev: Logical names used by administrators.
+/devices: Physical names used by the OS.
+/etc/path_to_instance: Instance names used by the kernel.
+The physical name is a symbolic link to the instance name.
+
+Project:
+Given the logical name e1000g0:
+a) Find its physical name.
+b) Find its instance name.
