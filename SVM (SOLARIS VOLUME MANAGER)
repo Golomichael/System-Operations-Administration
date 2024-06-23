@@ -1,162 +1,161 @@
-         SVM (SOLARIS VOLUME MANAGER)
+SVM (Solaris Volume Manager)
+To create SVM volumes, you must first create a state database. The state database is a container for SVM components called metadevices, which include disk sets, concatenated and striped volumes, as well as soft partitions.
 
-To create svm volumes , a stste database must be created first. The state database is a container of svm called metadevice. These components include disksets, concat and stripe volumes and well as soft partitions.
+Initial Setup
+Step 1: Creating a State Database
 
-IQ: 1st thing to do to set up svm is creating a state database
-
-A state database is recommended to be createwdon a unique slice. the partition cannot be used for anything else. It is recomended to have at least 3 state databases on a system for redundancy purpose
-
-1 )Creating an SVM volume
+The first step in setting up SVM is creating a state database.
+A state database should be created on a unique slice that is not used for anything else.
+It is recommended to have at least three state databases on a system for redundancy.
+Example Disk Configuration:
 
 disk1
-s0 = 100mb ==> state database
-s1 = 500mb 
-s3 = 500mb 
-s4 = 500mb 
+s0 = 100MB (state database)
+s1 = 500MB
+s3 = 500MB
+s4 = 500MB
+sh
+# devsadm
+# iostat -En
+# format
+Creating Filesystems:
 
-devsadm
-iostat -En
-#format
+sh
+# newfs /dev/rdsk/c0t4d0s0
+Display Volume Table of Contents:
 
-slice
+sh
+# prtvtoc /dev/rdsk/c0t4d0s2
+Step 2: Copying VTOC from disk1 to disk2
 
-#newfs /dev/rdsk/c0t4d0s0 ==>s1,s3.s4
+Disk2 must be fdisked before it can receive the VTOC of disk1.
+sh
+# fdisk /dev/rdsk/c0t5d0s2
+# prtvtoc /dev/rdsk/c0t4d0s2 | fmthard -s - /dev/rdsk/c0t5d0s2
+# prtvtoc /dev/rdsk/c0t5d0s2
+Creating State Databases
+Create 4 copies of the state database:
 
-Display the volume table of content of the sliced disk
-#prtvtoc /dev/rdsk/c0t4d0s2 ( It will display only sliced partitions)
+sh
+# metadb -a -f -c 2 c0t4d0s0 c0t5d0s0
+-a: add
+-f: force
+-c: create 2 copies on each slice
+Verify:
 
+sh
+# metadb
+# metadb -i
+Delete database:
 
-2)disk2
-copy the volume table of content from disk1 to disk2.
-Disk2 must be fdisk before it can receive the vtoc of disk1
-#fdisk /dev/rdsk/c0t5d0s2
+sh
+# metadb -d c0t4d0s0
+Creating Soft Partitions
+Create an SVM soft partition on c0t4d0s1 (100MB):
 
-copy vtoc
-#prtvtoc /dev/rdsk/c0t4d0s2 | fmthard -s- /dev/rdsk/c0t5d0s2 (this will slice disk2)
-#prtvtoc /dev/rdsk/c0t5d0s2 (to check)
-add file system
-s0,s1,s3,s4
+sh
+# metainit d10 -p c0t4d0s1
+Verify:
 
-II) 
-1)Create 4 copies of the state database on c0t4d0s0 and c0t5d0s0
-#metadb -a -f -c2 c0t4d0s0 c0t5d0s0
--a = add
--f = force
--c = 2 copies on each slice
+sh
+# metastat
+# metastat -p
+# metastat -c
+Format and Mount the Soft Partition:
 
-verify
-#metadb (will check disk label)
-#metadb -i 
+sh
+# newfs /dev/md/rdsk/d10
+# mkdir /soft1
+# mount /dev/md/dsk/d10 /soft1
+# df -h
+Make the Mount Point Permanent:
 
-delete database
-#metadb -d c0t4d0s0 ( it will delete all state databases on the partition)
+sh
+# echo "/dev/md/dsk/d10 /dev/md/rdsk/d10 /soft1 ufs 1 yes -" >> /etc/vfstab
+# tail -1 /etc/vfstab
+Expand the Soft Partition by 100MB:
 
-2)Create an SVM soft partition on c0t4d0s1 (100mb)
-#metainit d10 -p c0t4d0s1
-d10 = soft partition label (any number but it has to be d "something")
--p = soft partition volume
-verify
-#metastat (will display detailed info)
-#metastat -p
-#metastat -c
+sh
+# metattach d10 100m
+# metastat -c
+# growfs -M /soft1 /dev/md/rdsk/d10
+Delete a Volume in SVM:
 
-a.Format the soft partition
-#newfs /dev/md/rdsk/d10
-
-b.Mount the soft partition
-#mkdir /soft1
-#mount /dev/md/dsk/d10 /soft1
-df -h (to verify)
-
-c.Make the mount point permanent
-#echo "/dev/md/dsk/d10 /dev/md/rdsk/10 /soft1 ufs 1 yes -" >> /etc/vfstab
-verify
-tail -1 /etc/vfstab
-
-Expand the soft partition by 100mb
-#metattach d10 100m
-#metastat -c (to verify)
-we will have to add blocks because the foundation has been extended.
-#growfs -M /soft1 /dev/md/rdsk/d10
--M = specify mountpoint
-or
-#growfs /dev/md/rdsk/d10 (for unmounted filesystems)
-
-Delete a volume in SVM (delete d10 volume)
-a.Unmount the volume
-#umount /soft1
-
-b.Remove related line from /etc/vfstab file
-#vi /etc/vfstab and dd the line associated with /soft1
-
-c.Delete the soft partition 
-#metaclear d10
-
+Unmount the volume:
+sh
+# umount /soft1
+Remove related line from /etc/vfstab:
+sh
+# vi /etc/vfstab
+Delete the soft partition:
+sh
+Copy code
+# metaclear d10
 SVM RAID
+Types of RAID Volumes in SVM:
 
-SVM has 2 kinds of RAID volumes
-a. The concaternation volume (concat volume)
-It stores data vertically from one disk to another (from top to bottom).
+Concatenation volume (concat volume): Stores data vertically, from one disk to another.
+Stripe volume sets: Data is striped across disks horizontally in chunks referred to as interlace blocks.
+RAID 0:
 
-b.Stripe volume sets
-Data is stripped accross the disks in ahorizontal manner in chunks of blocks reffered to as the interplace blocks
+Create a concat volume set:
+sh
+# metainit d0 2 1 c0t4d0s1 1 c0t5d0s1
+# metastat -p
+# metastat -c
+Create a stripe volume set:
+sh
+# metainit d1 1 2 c0t4d0s3 c0t5d0s3
+# metastat -c
+# metastat -p
+Delete RAID 0 volumes:
+sh
+# metaclear d0
+# metaclear d1
+RAID 1:
 
-concat volumes store data in the disk using only one disk arm at a time while stripe volumes can store chunks of data using 2 or more arms at a time hence stripe volumes are faster in input/output (read/write operations than concat volumes.
+Create a RAID 1 volume:
+Create the volume sets:
+sh
+# metainit d0 1 1 c0t4d0s1
+# metainit d1 1 1 c0t5d0s1
+Create a one-way mirror set:
+sh
+# metainit d10 -m d0
+Attach the second submirror:
+sh
+# metattach d10 d1
+Converting and Expanding Filesystems
+Convert /export/home to an SVM volume:
 
+sh
+# metainit -f d7 1 1 c0t0d0s7
+# metastat -c
+Modify /etc/vfstab:
 
+sh
+# vi /etc/vfstab
+Add:
 
-A. RAID 0
+bash
 
-a.Create a concat volume set using c0t4d0s1 and c0t5d0s1
-#metainit d0 2 1 c0t4d0s1 1 c0t5d0s1 (This will create 1 volume called d0 from the 2 disk sets, 1 c0t4d0s1 and 1 c0t5d0s1)
-#metastat -p (to verify. it will display the structure)
-#metastat -c (will display the size)
-
-b. Create va stripe volume set using c0t4d0s3 and c0t5d0s3
-#metainit d1 1 2 c0t4d0s3 c0t5d0s3 (This will create 1 volume called d1 using 2 disk sets c0t4d0s3 c0t5d0s3)
-#metastat -c (to verify)
-#metastat -p (for structure)
-When you see intrlace that means it is stripe volume sets
-
-delete d0 and d1
-#metaclear d0 
-#metaclear d1
-
-B. RAID 1
-Create a RAID 1 volume called d10 from to stripe volume sets
-1 create the volume sets
-#metainit d0 1 1 c0t4d0s1
-#metainit d1 1 1 c0t5d0s1
-
-2. Create the one way mirror set by attaching the first submirror volume
-#metainit d10 -m d0
-
-3. Attached the second submirror to raid 1 volume
-#metattach d10 d1
-
-
-Convert a mounted filesystem to an svm volume, then expand the filesystem
-
-convert /export/home into an svm volume and expand it.
-
-1.Convert /export/home into an svm volume
-#metainit -f d7 1 1 c0t0d0s7 (This will convert /export/home into a volume)
-#metastat -c to verify
-
-2.Modify /etc/vfstab to reflect the change
-vi into /etc/vfstab
 /dev/md/dsk/d7 /dev/md/rdsk/d7 /export/home ufs 2 yes -
+Reboot the system:
 
-3.Reboot the system gracefully
-#init6
+sh
 
-Add 5GB disk cook and slice it
+# init 6
+Verify and Expand /export/home:
 
-4.Verify if /export/home is now on a metadevice
-#df -h
+sh
 
-5.Expand the /export/home volume (It is a RAID 0 expansion)
-d7 + c0t6d0s7 = 26gb ( from 21gb)
-#mettach d7 c0t6d0s7
-#metastat -c (to verify)
-#growfs -M /export/home dev/md/rdskd7 (to expand the mount point)
+# df -h
+# metattach d7 c0t6d0s7
+# metastat -c
+# growfs -M /export/home /dev/md/rdsk/d7
+This guide provides the basic steps for setting up and managing Solaris Volume Manager (SVM) volumes, including creating state databases, soft partitions, RAID configurations, and converting and expanding filesystems.
+
+
+
+
+
