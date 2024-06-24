@@ -1,0 +1,142 @@
+LAMP server is used to host multimedia websites that host require a database 
+LAMP (Linux, Apache, My sql, PHP)
+Static Web (configuration summary)
+ 
+Ansible Server (Used for network Automation)
+-can run scripts
+Inventory file is in (/etc/ansible/hosts)
+[aws-server] ip of your AWS server
+-	Ansible Clients (ip address or FDDN)
+-	Create an ansible account
+-	Generate an RSA key (tranfer key)
+AWS Rhel server
+-	Create an ansible account
+-	Add the account to sudo (assign sudo rigts to the account)
+RSA key (Remote security authorization) grants ansible server password less access to the ansible user account on the RHEL AWS server
+
+STEPS
+Log into RHEL 8 server
+Go to ASA click on ec2 instances
+Running instance
+RHEL 8 instance
+Get ip address
+Go to putty and putty into the two servers
+Su into root
+Installed ansible in server
+-	#Yum install epel-release -y  (install epel package)
+-	#yum install ansible -y  (install ansible)
+Create ansible user account in the two servers
+#useradd -m ansible
+Ansicble server- centos 7	Cloud server- RHEL 8
+1	#useradd -m ansible (create account)	1	#useradd -m ansible (create account)
+2	#passwd ansible (create password)	2	#passwd ansible (create password)
+3	Su – ansible (Login as ansible)	3	Su – ansible (Login as ansible)
+4	#ssh-keygen -t rsa (generate public key)	4	Vi /etc/sudoers
+Scroll all the way down to the and add
+Press I for insert and add the following lines
+Under root ALL=(ALL)
+
+Ansible ALL=(ALL) NOPASSWD: ALL
+
+5	#ssh-copy-id ansible@pu.blic.ip
+(Tranfer key from ansible server to ansible account in AWS server.	5	
+6	Yes	6	
+7	Password	7	
+8	#Ssh ansible@pu.blic.ip (verify) (connect to rhel server without asking for password- this allows paswordless access to client)	8	
+9	#Vi /etc/ansible/hosts
+(Add cloud server/RHEL8 server to inventory list)	9	
+10	Scroll all the way down to the bottom and add using O for append
+Press I for insert and add the following lines
+[aws]
+Ip address of AWS cloud RHEL 8 server
+
+Save and quit #wq!
+	10	
+11	#su - ansible	11	
+12	#ansible aws -m ping  (verify- telling ansible to ping server in this group or cloud)	12	
+13		13	
+14		14	
+15		15	
+
+Execute standard shell commands or AD-HOC commands in ansible
+1.	The Ansible command module (a module is a set of commands that can be pushed to ansible clients by the ansible server)
+
+The command module is used to execute regular shell commands by ansible.
+
+Display the pwd of the ansible user in the AWS RHEL8 ansible client
+$ansible aws -m command -a ‘pwd’
+-m = specify module
+-a = add command
+2.	Have ansible display the content of /etc/hosts and the pwd of the ansible user of all AWS server all at once
+$ansible aws -m command -a ‘cat /etc/hosts && pwd’ (will fail b/c the command module is limited) the shell module will execute the shell commands without limitations.
+
+3.	The ansible shell module (used to execute shell commands in ansible)
+$ansible aws -m shell -a ‘cat /etc/hosts && pwd’
+
+4.	Have ansible create a user account using the shell module in the AWS client.
+$ansible aws -m shell -a ‘useradd -c “devops26” -m devops26 (permission denied error or will fail b/c you can’t creaete a user account in standard user mode, and ansible account does not have sudo rights to create the account)
+$ansible aws -m shell -a ‘useradd -c “devops26” -m devops26’ - - become (the “- -become” will grant sudo rights to the ansible command)
+
+Verify in the AWS client
+$cat /etc/passwd
+	 
+
+5.	The file module (used to create file and directories)
+
+Create a file called file26 in the home of the AWS ansible client server
+$ansible aws -m file -a ‘path=/home/ansible/file26 state=touch’
+State=touch means we are creating a file
+
+Verify on AWS client
+$ls ( you should see the file
+
+Have ansible Create a directory called dir26 in the ansible user home of the AWS client.
+$ansible aws -m file module -a ‘path=/home/ansible/dir26 state=directory’
+
+To verify in AWS
+$ls -l
+
+Have ansible Create a directory called class26aws in the aws client using the file module with permission 777, owner = root of the group root. 
+$ansible aws -m file module -a ‘path=/home/ansible/class26aws state=directory mode=777 owner=root group=root’ - -become
+Verify in aws
+$ls (to make sure it’s there)
+$ls -ld class26aws
+
+
+Have ansible change the permission attribute of the file file26 om AWS as follows; 
+Mode=760, owner=root, group=root
+$ansible aws -m file module -a ‘path=/home/ansible/file26  mode=760 owner=root group=root’ - -become
+To verify in AWS
+$ls -l file26
+
+Have ansible delete the file file26 from the ansible user home of the aws server.
+ $ansible aws -m file -a ‘path=/home/ansible/file26  state=absent’
+State=absent – will delete a file or directory
+$ls (to verify in AWS)
+
+6.	The copy module
+1.	Use the shell module to copy the /etc/passwd file to the home of the ansible user in aws.
+$ansible aws -m shell -a ‘cp /etc/passwd .’
+$ls (to verify in AWS)
+
+2.	Use the copy module to copy /etc/hosts to the home of the ansible user in AWS
+$ansible aws -m copy -a ‘src=/etc/hosts dest=/home/ansible remote_src=yes’
+Remote_src=yes – copy operation should be performed entirely on remote client
+$ls (to verify in aws)
+
+3.	Create a directory called diraws1 in the pwd of your ansible user in the ansible server. Have ansible tranfer or copy the file to the ansible user’s home in aws.
+$touch f26 (in ansible)
+$ansible aws -m copy -a src=/home/ansible/f26 dest-=/home/ansible’
+Or
+$ansible aws -m copy -a src=f26 dest-=/home/ansible’
+
+$ls (to verify in AWS)
+
+7.	D
+8.	D
+9.	
+10.	
+
+
+
+
